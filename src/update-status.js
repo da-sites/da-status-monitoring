@@ -10,25 +10,46 @@
  * governing permissions and limitations under the License.
  */
 /* eslint-disable no-console */
-import jsdom from 'jsdom';
+import * as cheerio from 'cheerio';
+import * as fs from 'fs';
 
 const DA_ADMIN_HOST = process.env.DA_ADMIN_HOST || 'https://admin.da.live';
 const STATUS_ADMIN_URL = `${DA_ADMIN_HOST}/source/documentauthoring/da-aem-monitoring/status/latest.html`;
-const STATUS_PAGE = 'https://main--da-aem-monitoring--documentauthoring.hlx.page/status/latest';
 
 console.log('Using DA_ADMIN_HOST =', DA_ADMIN_HOST);
 
-function setLastUpdated(dom) {
-  const ps = dom.window.document.querySelectorAll('p');
-  for (const para of ps) {
-    if (para.textContent && para.textContent.startsWith('Last updated:')) {
-      para.textContent = `Last updated: ${new Date()}`;
-    }
-  }
+function setLastUpdated(doc) {
+  const para = doc('p:contains("Last updated:")');
+  para.text(`Last updated: ${new Date()}`);
 }
 
-async function pushToAdmin(dom) {
-  const content = dom.serialize();
+function setServiceStatus(service, status, doc) {
+  const dalive = doc(`p:contains("${service}")`);
+
+  let parent = dalive;
+  do {
+    parent = parent.parent();
+  } while (parent[0].name !== 'div');
+
+  const statusP = parent.next().first('p');
+  statusP.text(status);
+}
+
+function updateServiceStatus(service, junitRes, doc) {
+  const tc = junitRes(`testcase[name="Ping ${service}"]`);
+  const status = tc.children().length === 0 ? 'up' : 'down';
+  setServiceStatus(service, status, doc);
+  console.log(`Service ${service}: ${status}`);
+}
+
+function updateStatuses(junitRes, doc) {
+  updateServiceStatus('da-admin', junitRes, doc);
+  updateServiceStatus('da-collab', junitRes, doc);
+  updateServiceStatus('da-live', junitRes, doc);
+}
+
+async function pushToAdmin(doc) {
+  const content = doc.html();
   const blob = new Blob([content], { type: 'text/html' });
   const formData = new FormData();
   formData.append('data', blob);
@@ -40,24 +61,30 @@ async function pushToAdmin(dom) {
   }
 }
 
-async function updateStatus() {
+async function updateStatus(junitRes) {
   try {
     const resp = await fetch(STATUS_ADMIN_URL);
     if (resp.status !== 200) {
       throw new Error(`Unable to obtain status page: ${resp.status}`);
     }
     const text = await resp.text();
-    console.log('Obtained status page');
 
-    const dom = new jsdom.JSDOM(text);
-    setLastUpdated(dom);
-    // const table = dom.window.document.querySelector('div.columns');
+    const doc = cheerio.load(text);
+    updateStatuses(junitRes, doc);
+    setLastUpdated(doc);
 
-    console.log(dom.serialize());
-    await pushToAdmin(dom);
+    await pushToAdmin(doc);
   } catch (error) {
     console.log('Problem updating status page', error);
   }
 }
 
-await updateStatus();
+if (process.argv.length !== 3) {
+  console.error('Expected at least one argument!');
+  process.exit(1);
+}
+
+const data = fs.readFileSync(process.argv[2], 'utf8');
+const junitRes = cheerio.load(data, { xmlMode: true });
+
+await updateStatus(junitRes);
