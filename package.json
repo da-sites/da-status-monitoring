@@ -5,6 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "status:update": "node src/update-status.js",
+    "lint:js": "eslint .",
+    "lint": "npm run lint:js",
     "test": "mocha"
   },
   "mocha": {
@@ -12,9 +15,13 @@
     "reporter-options": "configFile=.mocha-multi.json"
   },
   "devDependencies": {
+    "@adobe/eslint-config-helix": "2.0.6",
+    "eslint": "8.56.0",
     "mocha": "^10.2.0",
     "mocha-junit-reporter": "^2.2.1",
-    "mocha-multi-reporters": "^1.5.1",
+    "mocha-multi-reporters": "^1.5.1"
+  },
+  "dependencies": {
     "jsdom": "^24.0.0"
   }
 }
