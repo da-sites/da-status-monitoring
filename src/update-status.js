@@ -14,7 +14,12 @@ import * as cheerio from 'cheerio';
 import * as fs from 'fs';
 
 const DA_ADMIN_HOST = process.env.DA_ADMIN_HOST || 'https://admin.da.live';
+const HLX_ADMIN_HOST = process.env.HLX_ADMIN_HOST || 'https://admin.hlx.page';
+const HLX_ADMIN_PATH = '/documentauthoring/da-aem-monitoring/main/status/latest';
+
 const STATUS_ADMIN_URL = `${DA_ADMIN_HOST}/source/documentauthoring/da-aem-monitoring/status/latest.html`;
+const PREVIEW_URL = `${HLX_ADMIN_HOST}/preview${HLX_ADMIN_PATH}`;
+const PUBLISH_URL = `${HLX_ADMIN_HOST}/live${HLX_ADMIN_PATH}`;
 
 console.log('Using DA_ADMIN_HOST =', DA_ADMIN_HOST);
 
@@ -79,6 +84,20 @@ async function updateStatus(junitRes) {
   }
 }
 
+async function previewAndPublish() {
+  const opts = { method: 'POST' };
+  const preresp = await fetch(PREVIEW_URL, opts);
+  if (preresp.status !== 200) {
+    throw new Error(`Problem previewing status update: ${preresp.status}`);
+  }
+  const pubresp = await fetch(PUBLISH_URL, opts);
+  if (pubresp.status !== 200) {
+    throw new Error(`Problem publishing status update: ${pubresp.status}`);
+  }
+  const json = await pubresp.json();
+  console.log('Published at ', json.live.url);
+}
+
 if (process.argv.length !== 3) {
   console.error('Expected at least one argument!');
   process.exit(1);
@@ -88,3 +107,4 @@ const data = fs.readFileSync(process.argv[2], 'utf8');
 const junitRes = cheerio.load(data, { xmlMode: true });
 
 await updateStatus(junitRes);
+await previewAndPublish();
