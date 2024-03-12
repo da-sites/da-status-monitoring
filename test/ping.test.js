@@ -10,7 +10,7 @@
  * governing permissions and limitations under the License.
  */
 import assert from 'assert';
-import jsdom from 'jsdom';
+import * as cheerio from 'cheerio';
 
 const DA_ADMIN_HOST = process.env.DA_ADMIN_HOST || 'https://admin.da.live';
 const DA_COLLAB_HOST = process.env.DA_COLLAB_HOST || 'https://collab.da.live';
@@ -38,8 +38,8 @@ describe('Ping Suite', () => {
     const res = await fetch(DA_LIVE_HOST);
     const html = await res.text();
 
-    const dom = new jsdom.JSDOM(html);
-    assert.equal('Browse - Dark Alley', dom.window.document.querySelector("title").textContent,
-      'da-live is down. Home page not rendering');
+    const doc = cheerio.load(html);
+    const title = doc('title');
+    assert.equal('Browse - Dark Alley', title.text());
   })
 });
