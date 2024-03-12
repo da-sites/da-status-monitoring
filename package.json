@@ -1,11 +1,11 @@
 {
-  "name": "da-mon",
+  "name": "da-status",
   "version": "0.0.1",
-  "description": "DA monitoring",
+  "description": "DA status",
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "status:update": "node src/update-status.js junit/test-results.xml",
+    "status:update": "node statusupdate/src/update-status.js junit/test-results.xml",
     "lint:js": "eslint .",
     "lint": "npm run lint:js",
     "test": "mocha"
