@@ -32,6 +32,8 @@ describe('Ping Suite', () => {
     const res = await fetch(`${DA_COLLAB_HOST}/api/v1/ping`);
     const json = await res.json();
     assert.equal('ok', json.status, 'da-collab is down');
+    assert.deepStrictEqual(['da-admin'], json.service_bindings,
+      'da-collab not using service binding to reach da-admin');
   });
 
   it('Ping da-live', async () => {
