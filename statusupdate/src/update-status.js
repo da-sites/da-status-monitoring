@@ -22,6 +22,7 @@ const PREVIEW_URL = `${HLX_ADMIN_HOST}/preview${HLX_ADMIN_PATH}`;
 const PUBLISH_URL = `${HLX_ADMIN_HOST}/live${HLX_ADMIN_PATH}`;
 
 console.log('Using DA_ADMIN_HOST =', DA_ADMIN_HOST);
+console.log('SLACK_TOKEN provided =', process.env.SLACK_TOKEN ? 'yes' : 'no');
 
 function setLastUpdated(doc) {
   const para = doc('p:contains("Last updated:")');
@@ -63,6 +64,17 @@ function updateServiceStatus(service, junitRes, doc) {
   const status = pingStatus && detailStatus ? 'up' : 'down';
   setServiceStatus(service, status, doc);
   console.log(`Service ${service}: ${status}`);
+
+  if (status !== 'up' && process.env.SLACK_TOKEN) {
+    const msg = encodeURIComponent(`Alert: ${service} is ${status}`);
+    const opts = {
+      method: 'POST',
+      headers: new Headers({ Authorization: `Bearer ${process.env.SLACK_TOKEN}` }),
+    };
+
+    const url = `https://slack.com/api/chat.postMessage?channel=da-status&text=${msg}`;
+    fetch(url, opts);
+  }
 }
 
 function updateStatuses(junitRes, doc) {
@@ -125,4 +137,6 @@ const data = fs.readFileSync(process.argv[2], 'utf8');
 const junitRes = cheerio.load(data, { xmlMode: true });
 
 await updateStatus(junitRes);
-await previewAndPublish();
+if (!process.env.SKIP_PUBLISH) {
+  await previewAndPublish();
+}
