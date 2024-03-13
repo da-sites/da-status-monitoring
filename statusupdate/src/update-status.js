@@ -25,7 +25,7 @@ console.log('Using DA_ADMIN_HOST =', DA_ADMIN_HOST);
 
 function setLastUpdated(doc) {
   const para = doc('p:contains("Last updated:")');
-  para.text(`Last updated: ${new Date()}`);
+  para.text(`Last updated: ${new Date().toUTCString()}`);
 }
 
 function setServiceStatus(service, status, doc) {
