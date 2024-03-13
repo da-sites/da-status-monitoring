@@ -23,7 +23,7 @@ console.log('DA_LIVE_HOST =', DA_LIVE_HOST);
 
 describe('Ping Suite', () => {
   it('Ping da-admin', async () => {
-    const res = await fetch(`${DA_ADMIN_HOST}/source/documentauthoring/da-aem-monitoring/tests/pingtest.html`)
+    const res = await fetch(`${DA_ADMIN_HOST}/source/da-sites/da-status/tests/pingtest.html`)
     const txt = await res.text();
     assert(txt.includes('<p>ping</p>'), 'da-admin is down. Expected result not found in document: ' + txt);
   });

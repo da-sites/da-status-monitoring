@@ -15,9 +15,9 @@ import * as fs from 'fs';
 
 const DA_ADMIN_HOST = process.env.DA_ADMIN_HOST || 'https://admin.da.live';
 const HLX_ADMIN_HOST = process.env.HLX_ADMIN_HOST || 'https://admin.hlx.page';
-const HLX_ADMIN_PATH = '/documentauthoring/da-aem-monitoring/main/status/latest';
+const HLX_ADMIN_PATH = '/da-sites/da-status/main/status/latest';
 
-const STATUS_ADMIN_URL = `${DA_ADMIN_HOST}/source/documentauthoring/da-aem-monitoring/status/latest.html`;
+const STATUS_ADMIN_URL = `${DA_ADMIN_HOST}/source/da-sites/da-status/status/latest.html`;
 const PREVIEW_URL = `${HLX_ADMIN_HOST}/preview${HLX_ADMIN_PATH}`;
 const PUBLISH_URL = `${HLX_ADMIN_HOST}/live${HLX_ADMIN_PATH}`;
 
