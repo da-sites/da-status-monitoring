@@ -27,6 +27,7 @@ const DA_COLLAB_HOST = process.env.DA_COLLAB_HOST || 'https://collab.da.live';
 
 describe('Test da-collab', () => {
   it('Test YDoc WebSocket connection', (done) => {
+    assert(false);
     const ydoc = new Y.Doc();
     const room = `${DA_ADMIN_HOST}/source/da-sites/da-status/tests/wstest.html`;
     const wsProvider = new yws.WebsocketProvider(
