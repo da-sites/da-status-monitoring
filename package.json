@@ -8,7 +8,7 @@
     "status:update": "node statusupdate/src/update-status.js junit/test-results.xml",
     "lint:js": "eslint .",
     "lint": "npm run lint:js",
-    "test": "mocha"
+    "test": "mocha --exit # --exit is needed because yjs keeps running listeners"
   },
   "mocha": {
     "reporter": "mocha-multi-reporters",
@@ -19,7 +19,9 @@
     "eslint": "8.56.0",
     "mocha": "^10.2.0",
     "mocha-junit-reporter": "^2.2.1",
-    "mocha-multi-reporters": "^1.5.1"
+    "mocha-multi-reporters": "^1.5.1",
+    "yjs": "^13.5.0",
+    "y-websocket": "^1.5.4"
   },
   "dependencies": {
     "cheerio": "^1.0.0-rc.12"
