@@ -9,12 +9,14 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the License.
  */
+/* eslint-env mocha */
 import assert from 'assert';
 
 // Workaround for https://github.com/yjs/y-websocket/issues/170
 // y-websocket is not correctly defined as a ES Module
 // therefore fallback to use require for importing it
 import { createRequire } from 'module';
+
 const require = createRequire(import.meta.url);
 const WebSocket = require('ws');
 const Y = require('yjs');
@@ -27,9 +29,14 @@ describe('Test da-collab', () => {
   it('Test YDoc WebSocket connection', (done) => {
     const ydoc = new Y.Doc();
     const room = `${DA_ADMIN_HOST}/source/da-sites/da-status/tests/wstest.html`;
-    const wsProvider = new yws.WebsocketProvider(DA_COLLAB_HOST,room, ydoc, { WebSocketPolyfill: WebSocket });
+    const wsProvider = new yws.WebsocketProvider(
+      DA_COLLAB_HOST,
+      room,
+      ydoc,
+      { WebSocketPolyfill: WebSocket },
+    );
 
-    ydoc.on('update', (x, originWS) => {
+    ydoc.on('update', () => {
       try {
         const initial = ydoc.getMap('aem').get('initial');
 
@@ -39,8 +46,10 @@ describe('Test da-collab', () => {
 
         // Now check the returned content
         const testContent = 'WSTest123';
-        assert(initial.includes(testContent),
-          `Web socket connection to da-collab not working: did not provide the correct content: looking for ${testContent} in ${initial}`);
+        assert(
+          initial.includes(testContent),
+          `Web socket connection to da-collab not working: did not provide the correct content: looking for ${testContent} in ${initial}`,
+        );
         done();
       } catch (error) {
         done(error);
