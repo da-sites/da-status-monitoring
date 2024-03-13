@@ -7,8 +7,10 @@ on:
   schedule:
     # * is a special character in YAML so you have to quote this string
     # every 15 mins
-    - cron:  '0/5 * * * *'
-
+    - cron:  '0/15 * * * *'
+  push:
+    branches:
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
