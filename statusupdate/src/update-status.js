@@ -40,9 +40,27 @@ function setServiceStatus(service, status, doc) {
   statusP.text(status);
 }
 
-function updateServiceStatus(service, junitRes, doc) {
+function getDetailedStatus(service, junitRes) {
+  const suite = junitRes(`testcase[classname="Test ${service}"]`);
+  let passing = true;
+
+  suite.each((_, elm) => {
+    passing = passing && junitRes(elm).children().length === 0;
+  });
+  return passing;
+}
+
+function getPingStatus(service, junitRes) {
   const tc = junitRes(`testcase[name="Ping ${service}"]`);
-  const status = tc.children().length === 0 ? 'up' : 'down';
+  const status = tc.children().length === 0;
+  return status;
+}
+
+function updateServiceStatus(service, junitRes, doc) {
+  const pingStatus = getPingStatus(service, junitRes);
+  const detailStatus = getDetailedStatus(service, junitRes);
+
+  const status = pingStatus && detailStatus ? 'up' : 'down';
   setServiceStatus(service, status, doc);
   console.log(`Service ${service}: ${status}`);
 }
