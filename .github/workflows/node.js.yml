@@ -21,7 +21,10 @@ jobs:
       with:
         node-version: 21
         cache: 'npm'
+
     - run: npm ci
     - run: npm run build --if-present
     - run: npm test
-    - run: npm run status:update
+    - env:
+        SLACK_TOKEN: ${{ secrets.SLACK_TOKEN }}
+      run: npm run status:update
