@@ -21,6 +21,7 @@ const STATUS_ADMIN_URL = `${DA_ADMIN_HOST}/source/da-sites/da-status/status/late
 const PREVIEW_URL = `${HLX_ADMIN_HOST}/preview${HLX_ADMIN_PATH}`;
 const PUBLISH_URL = `${HLX_ADMIN_HOST}/live${HLX_ADMIN_PATH}`;
 
+console.log(new Date().toUTCString());
 console.log('Using DA_ADMIN_HOST =', DA_ADMIN_HOST);
 console.log('SLACK_TOKEN provided =', process.env.SLACK_TOKEN ? 'yes' : 'no');
 
@@ -57,7 +58,7 @@ function getPingStatus(service, junitRes) {
   return status;
 }
 
-function updateServiceStatus(service, junitRes, doc) {
+async function updateServiceStatus(service, junitRes, doc) {
   const pingStatus = getPingStatus(service, junitRes);
   const detailStatus = getDetailedStatus(service, junitRes);
 
@@ -73,14 +74,19 @@ function updateServiceStatus(service, junitRes, doc) {
     };
 
     const url = `https://slack.com/api/chat.postMessage?channel=da-status&text=${msg}`;
-    fetch(url, opts);
+    const sr = await fetch(url, opts);
+    if (sr.status === 200) {
+      console.log('Sent message to Slack at', new Date());
+    } else {
+      console.log('Problem sending message to slack', sr);
+    }
   }
 }
 
-function updateStatuses(junitRes, doc) {
-  updateServiceStatus('da-admin', junitRes, doc);
-  updateServiceStatus('da-collab', junitRes, doc);
-  updateServiceStatus('da-live', junitRes, doc);
+async function updateStatuses(junitRes, doc) {
+  await updateServiceStatus('da-admin', junitRes, doc);
+  await updateServiceStatus('da-collab', junitRes, doc);
+  await updateServiceStatus('da-live', junitRes, doc);
 }
 
 async function pushToAdmin(doc) {
@@ -105,7 +111,7 @@ async function updateStatus(junitRes) {
     const text = await resp.text();
 
     const doc = cheerio.load(text);
-    updateStatuses(junitRes, doc);
+    await updateStatuses(junitRes, doc);
     setLastUpdated(doc);
 
     await pushToAdmin(doc);

@@ -29,13 +29,10 @@ describe('Test da-collab', () => {
   it('Test YDoc WebSocket connection', (done) => {
     const ydoc = new Y.Doc();
     const room = `${DA_ADMIN_HOST}/source/da-sites/da-status/tests/wstest.html`;
-    const wsProvider = new yws.WebsocketProvider(
-      DA_COLLAB_HOST,
-      room,
-      ydoc,
-      { WebSocketPolyfill: WebSocket },
-    );
 
+    let wsProvider;
+    // Register callback before the creation of the WebsocketProvider to avoid
+    // race condition
     ydoc.on('update', () => {
       try {
         const initial = ydoc.getMap('aem').get('initial');
@@ -48,12 +45,19 @@ describe('Test da-collab', () => {
         const testContent = 'WSTest123';
         assert(
           initial.includes(testContent),
-          `Web socket connection to da-collab not working: did not provide the correct content: looking for ${testContent} in ${initial}`,
+          `Web socket connection to da-collab not working: did not provide the correct content: looking in ${room} for ${testContent} in ${initial}`,
         );
         done();
       } catch (error) {
         done(error);
       }
     });
+
+    wsProvider = new yws.WebsocketProvider(
+      DA_COLLAB_HOST,
+      room,
+      ydoc,
+      { WebSocketPolyfill: WebSocket },
+    );
   });
 });

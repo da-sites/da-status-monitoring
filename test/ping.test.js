@@ -18,6 +18,7 @@ const DA_ADMIN_HOST = process.env.DA_ADMIN_HOST || 'https://admin.da.live';
 const DA_COLLAB_HOST = process.env.DA_COLLAB_HOST || 'https://collab.da.live';
 const DA_LIVE_HOST = process.env.DA_LIVE_HOST || 'https://da.live';
 
+console.log(new Date().toUTCString());
 console.log('Environment configuration:');
 console.log('DA_ADMIN_HOST =', DA_ADMIN_HOST);
 console.log('DA_COLLAB_HOST =', DA_COLLAB_HOST);
@@ -25,19 +26,20 @@ console.log('DA_LIVE_HOST =', DA_LIVE_HOST);
 
 describe('Ping Suite', () => {
   it('Ping da-admin', async () => {
-    const res = await fetch(`${DA_ADMIN_HOST}/source/da-sites/da-status/tests/pingtest.html`);
+    const url = `${DA_ADMIN_HOST}/source/da-sites/da-status/tests/pingtest.html`;
+    const res = await fetch(url);
     const txt = await res.text();
-    assert(txt.includes('<p>ping</p>'), `da-admin is down. Expected result not found in document: ${txt}`);
+    assert(txt.includes('<p>ping</p>'), `da-admin is down. Expected <p>ping</p> not found in ${url}: ${txt}`);
   });
 
   it('Ping da-collab', async () => {
     const res = await fetch(`${DA_COLLAB_HOST}/api/v1/ping`);
     const json = await res.json();
-    assert.equal('ok', json.status, 'da-collab is down');
+    assert.equal('ok', json.status, `da-collab is down, status: ${JSON.stringify(json)}`);
     assert.deepStrictEqual(
       ['da-admin'],
       json.service_bindings,
-      'da-collab not using service binding to reach da-admin',
+      `da-collab not using service binding to reach da-admin, status: ${JSON.stringify(json)}`,
     );
   });
 
@@ -47,6 +49,7 @@ describe('Ping Suite', () => {
 
     const doc = cheerio.load(html);
     const title = doc('title');
-    assert.equal('Browse - Dark Alley', title.text());
+    const txt = title.text();
+    assert.equal('Browse - Dark Alley', txt, `Page title not found in: ${txt}`);
   });
 });
