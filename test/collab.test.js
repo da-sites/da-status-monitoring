@@ -10,6 +10,7 @@
  * governing permissions and limitations under the License.
  */
 /* eslint-env mocha */
+/* eslint-disable no-console */
 import assert from 'assert';
 
 // Workaround for https://github.com/yjs/y-websocket/issues/170
@@ -26,6 +27,24 @@ const DA_ADMIN_HOST = process.env.DA_ADMIN_HOST || 'https://admin.da.live';
 const DA_COLLAB_HOST = process.env.DA_COLLAB_HOST || 'https://collab.da.live';
 
 describe('Test da-collab', () => {
+  function getURLText(url) {
+    return fetch(url).then((res) => res.text())
+      .catch((e) => {
+        console.log('Caught exception during warmup', e);
+      });
+  }
+
+  // eslint-disable-next-line func-names
+  before(function (done) {
+    this.timeout(10000);
+    console.log('Network warmup');
+
+    // before() can't handly async for us, so use the promise approach
+    getURLText(`${DA_ADMIN_HOST}/source/da-sites/da-status/tests/pingtest.html`)
+      .then(getURLText(`${DA_COLLAB_HOST}/api/v1/ping`))
+      .then(() => done());
+  });
+
   it('Test YDoc WebSocket connection', (done) => {
     const ydoc = new Y.Doc();
     const room = `${DA_ADMIN_HOST}/source/da-sites/da-status/tests/wstest.html`;
@@ -59,5 +78,5 @@ describe('Test da-collab', () => {
       ydoc,
       { WebSocketPolyfill: WebSocket },
     );
-  });
+  }).timeout(5000);
 });
