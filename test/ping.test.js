@@ -25,12 +25,29 @@ console.log('DA_COLLAB_HOST =', DA_COLLAB_HOST);
 console.log('DA_LIVE_HOST =', DA_LIVE_HOST);
 
 describe('Ping Suite', () => {
+  // eslint-disable-next-line func-names
+  before(function (done) {
+    this.timeout(10000);
+    console.log('Network warmup');
+
+    // Do a fetch on da-admin to warm up the network
+    const url = `${DA_ADMIN_HOST}/source/da-sites/da-status/tests/pingtest.html`;
+
+    // before() can't handly async for us, so use the promise approach
+    fetch(url).then((res) => res.text())
+      .then(() => done())
+      .catch((e) => {
+        console.log('Caught exception during warmup', e);
+        done();
+      });
+  });
+
   it('Ping da-admin', async () => {
     const url = `${DA_ADMIN_HOST}/source/da-sites/da-status/tests/pingtest.html`;
     const res = await fetch(url);
     const txt = await res.text();
     assert(txt.includes('<p>ping</p>'), `da-admin is down. Expected <p>ping</p> not found in ${url}: ${txt}`);
-  });
+  }).timeout(5000);
 
   it('Ping da-collab', async () => {
     const res = await fetch(`${DA_COLLAB_HOST}/api/v1/ping`);
