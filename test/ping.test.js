@@ -58,7 +58,7 @@ describe('Ping Suite', () => {
       json.service_bindings,
       `da-collab not using service binding to reach da-admin, status: ${JSON.stringify(json)}`,
     );
-  });
+  }).timeout(5000);
 
   it('Ping da-live', async () => {
     const res = await fetch(DA_LIVE_HOST);
@@ -68,5 +68,5 @@ describe('Ping Suite', () => {
     const title = doc('title');
     const txt = title.text();
     assert.equal('Browse - Dark Alley', txt, `Page title not found in: ${txt}`);
-  });
+  }).timeout(5000);
 });
