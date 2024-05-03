@@ -103,21 +103,17 @@ async function pushToAdmin(doc) {
 }
 
 async function updateStatus(junitRes) {
-  try {
-    const resp = await fetch(STATUS_ADMIN_URL);
-    if (resp.status !== 200) {
-      throw new Error(`Unable to obtain status page: ${resp.status}`);
-    }
-    const text = await resp.text();
-
-    const doc = cheerio.load(text);
-    await updateStatuses(junitRes, doc);
-    setLastUpdated(doc);
-
-    await pushToAdmin(doc);
-  } catch (error) {
-    console.log('Problem updating status page', error);
+  const resp = await fetch(STATUS_ADMIN_URL);
+  if (resp.status !== 200) {
+    throw new Error(`Unable to obtain status page: ${resp.status}`);
   }
+  const text = await resp.text();
+
+  const doc = cheerio.load(text);
+  await updateStatuses(junitRes, doc);
+  setLastUpdated(doc);
+
+  await pushToAdmin(doc);
 }
 
 async function previewAndPublish() {
