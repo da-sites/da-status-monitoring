@@ -31,9 +31,12 @@ function setLastUpdated(doc) {
 }
 
 function setServiceStatus(service, status, doc) {
-  const dalive = doc(`p:contains("${service}")`);
+  const svcEl = doc(`li:contains("${service}")`);
+  if (svcEl.length < 1) {
+    throw new Error(`Service ${service} not found in status page`);
+  }
 
-  let parent = dalive;
+  let parent = svcEl;
   do {
     parent = parent.parent();
   } while (parent[0].name !== 'div');
@@ -97,7 +100,7 @@ async function pushToAdmin(doc) {
 
   const opts = { method: 'PUT', body: formData };
   const putResp = await fetch(STATUS_ADMIN_URL, opts);
-  if (putResp.status !== 201) {
+  if (putResp.status !== 201 && putResp.status !== 200) {
     throw new Error(`Problem updating status page: ${putResp.status}`);
   }
 }
