@@ -54,7 +54,7 @@ describe('Test da-collab', () => {
     // race condition
     ydoc.on('update', () => {
       try {
-        const initial = ydoc.getMap('aem').get('initial');
+        const initial = ydoc.getXmlFragment('prosemirror').toString();
 
         // Gracefully disconnect to avoid errors on the server
         wsProvider.disconnect();
