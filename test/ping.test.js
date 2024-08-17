@@ -67,6 +67,6 @@ describe('Ping Suite', () => {
     const doc = cheerio.load(html);
     const title = doc('title');
     const txt = title.text();
-    assert.equal('Browse - Dark Alley', txt, `Page title not found in: ${txt}`);
+    assert.equal('Browse - DA', txt, `Page title not found in: ${txt}`);
   }).timeout(5000);
 });
