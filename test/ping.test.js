@@ -16,12 +16,14 @@ import * as cheerio from 'cheerio';
 
 const DA_ADMIN_HOST = process.env.DA_ADMIN_HOST || 'https://admin.da.live';
 const DA_COLLAB_HOST = process.env.DA_COLLAB_HOST || 'https://collab.da.live';
+const DA_CONTENT_HOST = process.env.DA_CONTENT_HOST || 'https://content.da.live';
 const DA_LIVE_HOST = process.env.DA_LIVE_HOST || 'https://da.live';
 
 console.log(new Date().toUTCString());
 console.log('Environment configuration:');
 console.log('DA_ADMIN_HOST =', DA_ADMIN_HOST);
 console.log('DA_COLLAB_HOST =', DA_COLLAB_HOST);
+console.log('DA_CONTENT_HOST =', DA_COLLAB_HOST);
 console.log('DA_LIVE_HOST =', DA_LIVE_HOST);
 
 describe('Ping Suite', () => {
@@ -58,6 +60,13 @@ describe('Ping Suite', () => {
       json.service_bindings,
       `da-collab not using service binding to reach da-admin, status: ${JSON.stringify(json)}`,
     );
+  }).timeout(5000);
+
+  it('Ping da-content', async () => {
+    const url = `${DA_CONTENT_HOST}/da-sites/da-status/tests/pingtest`;
+    const res = await fetch(url);
+    const txt = await res.text();
+    assert(txt.includes('<p>ping</p>'), `da-content is down. Expected <p>ping</p> not found in ${url}: ${txt}`);
   }).timeout(5000);
 
   it('Ping da-live', async () => {

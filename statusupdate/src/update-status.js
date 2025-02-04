@@ -89,6 +89,7 @@ async function updateServiceStatus(service, junitRes, doc) {
 async function updateStatuses(junitRes, doc) {
   await updateServiceStatus('da-admin', junitRes, doc);
   await updateServiceStatus('da-collab', junitRes, doc);
+  await updateServiceStatus('da-content', junitRes, doc);
   await updateServiceStatus('da-live', junitRes, doc);
 }
 
