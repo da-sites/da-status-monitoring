@@ -61,6 +61,26 @@ function getPingStatus(service, junitRes) {
   return status;
 }
 
+async function postSlackMessage(msg) {
+  if (!process.env.SLACK_TOKEN) {
+    console.error('No SLACK_TOKEN provided, skipping Slack message');
+    return;
+  }
+
+  const opts = {
+    method: 'POST',
+    headers: new Headers({ Authorization: `Bearer ${process.env.SLACK_TOKEN}` }),
+  };
+
+  const url = `https://slack.com/api/chat.postMessage?channel=da-status&text=${msg}`;
+  const sr = await fetch(url, opts);
+  if (sr.status === 200) {
+    console.log('Sent message to Slack at', new Date());
+  } else {
+    console.log('Problem sending message to slack', sr);
+  }
+}
+
 async function updateServiceStatus(service, junitRes, doc) {
   const pingStatus = getPingStatus(service, junitRes);
   const detailStatus = getDetailedStatus(service, junitRes);
@@ -71,18 +91,7 @@ async function updateServiceStatus(service, junitRes, doc) {
 
   if (status !== 'up' && process.env.SLACK_TOKEN) {
     const msg = encodeURIComponent(`Alert: ${service} is ${status}`);
-    const opts = {
-      method: 'POST',
-      headers: new Headers({ Authorization: `Bearer ${process.env.SLACK_TOKEN}` }),
-    };
-
-    const url = `https://slack.com/api/chat.postMessage?channel=da-status&text=${msg}`;
-    const sr = await fetch(url, opts);
-    if (sr.status === 200) {
-      console.log('Sent message to Slack at', new Date());
-    } else {
-      console.log('Problem sending message to slack', sr);
-    }
+    await postSlackMessage(msg);
   }
 }
 
@@ -142,7 +151,13 @@ if (process.argv.length !== 3) {
 const data = fs.readFileSync(process.argv[2], 'utf8');
 const junitRes = cheerio.load(data, { xmlMode: true });
 
-await updateStatus(junitRes);
-if (!process.env.SKIP_PUBLISH) {
-  await previewAndPublish();
+try {
+  await updateStatus(junitRes);
+  if (!process.env.SKIP_PUBLISH) {
+    await previewAndPublish();
+  }
+} catch (e) {
+  console.error('Error updating status:', e);
+  await postSlackMessage(`Updating status info failed: ${e} - For more details: https://github.com/da-sites/da-status-monitoring/actions`);
+  process.exit(1);
 }
