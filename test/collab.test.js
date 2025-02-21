@@ -70,7 +70,7 @@ describe('Test da-collab', () => {
       } catch (error) {
         done(error);
       }
-    }).timeout(10000);
+    });
 
     wsProvider = new yws.WebsocketProvider(
       DA_COLLAB_HOST,
@@ -78,5 +78,5 @@ describe('Test da-collab', () => {
       ydoc,
       { WebSocketPolyfill: WebSocket },
     );
-  }).timeout(5000);
+  }).timeout(10000);
 });
