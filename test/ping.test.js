@@ -23,7 +23,7 @@ console.log(new Date().toUTCString());
 console.log('Environment configuration:');
 console.log('DA_ADMIN_HOST =', DA_ADMIN_HOST);
 console.log('DA_COLLAB_HOST =', DA_COLLAB_HOST);
-console.log('DA_CONTENT_HOST =', DA_COLLAB_HOST);
+console.log('DA_CONTENT_HOST =', DA_CONTENT_HOST);
 console.log('DA_LIVE_HOST =', DA_LIVE_HOST);
 
 describe('Ping Suite', () => {
