@@ -18,6 +18,7 @@ const DA_ADMIN_HOST = process.env.DA_ADMIN_HOST || 'https://admin.da.live';
 const DA_COLLAB_HOST = process.env.DA_COLLAB_HOST || 'https://collab.da.live';
 const DA_CONTENT_HOST = process.env.DA_CONTENT_HOST || 'https://content.da.live';
 const DA_LIVE_HOST = process.env.DA_LIVE_HOST || 'https://da.live';
+const DA_UE_HOST = process.env.DA_UE_HOST || 'https://main--uetest--da-testautomation.ue.da.live';
 
 console.log(new Date().toUTCString());
 console.log('Environment configuration:');
@@ -25,6 +26,7 @@ console.log('DA_ADMIN_HOST =', DA_ADMIN_HOST);
 console.log('DA_COLLAB_HOST =', DA_COLLAB_HOST);
 console.log('DA_CONTENT_HOST =', DA_CONTENT_HOST);
 console.log('DA_LIVE_HOST =', DA_LIVE_HOST);
+console.log('DA_UE_HOST =', DA_UE_HOST);
 
 describe('Ping Suite', () => {
   // eslint-disable-next-line func-names
@@ -77,5 +79,19 @@ describe('Ping Suite', () => {
     const title = doc('title');
     const txt = title.text();
     assert.equal('Browse - DA', txt, `Page title not found in: ${txt}`);
+  }).timeout(5000);
+
+  it('Ping da-ue', async () => {
+    // da-ue content
+    let url = `${DA_UE_HOST}/index`;
+    let res = await fetch(url);
+    let txt = await res.text();
+    assert(txt.includes('<h1>Congrats, you are ready to go!'), `da-ue is down. Expected "<h1>Congrats, you are ready to go! </h1>" not found in ${url}: ${txt}`);
+
+    // da-ue reverse proxy
+    url = `${DA_UE_HOST}/scripts/aem.js`;
+    res = await fetch(url);
+    txt = await res.text();
+    assert(txt.includes('function init()'), `da-ue is down. Reverse proxy is not working for ${url}`);
   }).timeout(5000);
 });
