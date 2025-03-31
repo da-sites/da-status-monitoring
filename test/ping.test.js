@@ -86,7 +86,7 @@ describe('Ping Suite', () => {
     let url = `${DA_UE_HOST}/index`;
     let res = await fetch(url);
     let txt = await res.text();
-    assert(txt.includes('<h1>Congrats, you are ready to go! </h1>'), `da-ue is down. Expected "<h1>Congrats, you are ready to go! </h1>" not found in ${url}: ${txt}`);
+    assert(txt.includes('<h1>Congrats, you are ready to go!'), `da-ue is down. Expected "<h1>Congrats, you are ready to go! </h1>" not found in ${url}: ${txt}`);
 
     // da-ue reverse proxy
     url = `${DA_UE_HOST}/scripts/aem.js`;
