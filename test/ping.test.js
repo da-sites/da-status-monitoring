@@ -86,12 +86,14 @@ describe('Ping Suite', () => {
     let url = `${DA_UE_HOST}/index`;
     let res = await fetch(url);
     let txt = await res.text();
-    assert(txt.includes('<h1>Congrats, you are ready to go!'), `da-ue is down. Expected "<h1>Congrats, you are ready to go! </h1>" not found in ${url}: ${txt}`);
+    assert(res.status === 401, `da-ue is down. ${url} returned ${res.status}`);
+    assert(txt.includes('<script src="https://universal-editor-service.adobe.io/cors.js" async></script>'), `da-ue is down. Expected "<h1>Congrats, you are ready to go! </h1>" not found in ${url}: ${txt}`);
 
     // da-ue reverse proxy
     url = `${DA_UE_HOST}/scripts/aem.js`;
     res = await fetch(url);
     txt = await res.text();
+    assert(res.ok, `da-ue is down. Reverse proxy is not working for ${url}`);
     assert(txt.includes('function init()'), `da-ue is down. Reverse proxy is not working for ${url}`);
   }).timeout(5000);
 });
