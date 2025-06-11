@@ -90,7 +90,8 @@ async function updateServiceStatus(service, junitRes, doc) {
   console.log(`Service ${service}: ${status}`);
 
   if (status !== 'up' && process.env.SLACK_TOKEN) {
-    const msg = encodeURIComponent(`Alert: ${service} is ${status}`);
+    const runId = process.env.GITHUB_RUN_ID;
+    const msg = encodeURIComponent(`Alert: ${service} is ${status} - Run details: https://github.com/da-sites/da-status-monitoring/actions/runs/${runId}`);
     await postSlackMessage(msg);
   }
 }
@@ -159,6 +160,7 @@ try {
   }
 } catch (e) {
   console.error('Error updating status:', e);
-  await postSlackMessage(`Updating status info failed: ${e} - For more details: https://github.com/da-sites/da-status-monitoring/actions`);
+  const runId = process.env.GITHUB_RUN_ID;
+  await postSlackMessage(`Updating status info failed: ${e} - For more details: https://github.com/da-sites/da-status-monitoring/actions/runs/${runId}`);
   process.exit(1);
 }
