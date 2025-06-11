@@ -8,7 +8,7 @@
     "status:update": "node statusupdate/src/update-status.js junit/test-results.xml",
     "lint:js": "eslint .",
     "lint": "npm run lint:js",
-    "test": "mocha --exit --retries 2 # --exit is needed because yjs keeps running listeners"
+    "test": "mocha --exit --retries 1 # --exit is needed because yjs keeps running listeners"
   },
   "mocha": {
     "reporter": "mocha-multi-reporters",

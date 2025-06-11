@@ -68,7 +68,7 @@ describe('Ping Suite', () => {
     const url = `${DA_CONTENT_HOST}/da-sites/da-status/tests/pingtest`;
     const res = await fetch(url);
     const txt = await res.text();
-    assert(txt.includes('<p>ping</p>'), `da-content is down. Expected <p>ping</p> not found in ${url}: ${txt}`);
+    assert(txt.includes('<p>pingo</p>'), `da-content is down. Expected <p>ping</p> not found in ${url}: ${txt}`);
   }).timeout(5000);
 
   it('Ping da-live', async () => {
