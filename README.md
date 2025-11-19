@@ -23,4 +23,3 @@ For example, execute the tests like this:
 DA_COLLAB_HOST=http://localhost:4711 DA_ADMIN_HOST=http://localhost:8787 DA_LIVE_HOST=http://localhost:3000 npm t
 ```
 
-
