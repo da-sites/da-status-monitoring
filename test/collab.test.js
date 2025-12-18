@@ -18,6 +18,8 @@ import assert from 'assert';
 // therefore fallback to use require for importing it
 import { createRequire } from 'module';
 
+import { IMS_TOKEN } from '../src/setup-auth.js';
+
 const require = createRequire(import.meta.url);
 const WebSocket = require('ws');
 const Y = require('yjs');
@@ -28,7 +30,7 @@ const DA_COLLAB_HOST = process.env.DA_COLLAB_HOST || 'https://collab.da.live';
 
 describe('Test da-collab', () => {
   function getURLText(url) {
-    return fetch(url).then((res) => res.text())
+    return fetch(url, { headers: { Authorization: `Bearer: ${IMS_TOKEN}` } }).then((res) => res.text())
       .catch((e) => {
         console.log('Caught exception during warmup', e);
       });
@@ -76,7 +78,12 @@ describe('Test da-collab', () => {
       DA_COLLAB_HOST,
       room,
       ydoc,
-      { WebSocketPolyfill: WebSocket },
+      {
+        WebSocketPolyfill: WebSocket,
+        params: {
+          Authorization: `Bearer: ${IMS_TOKEN}`,
+        },
+      },
     );
   }).timeout(10000);
 });

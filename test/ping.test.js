@@ -13,6 +13,7 @@
 /* eslint-disable no-console */
 import assert from 'assert';
 import * as cheerio from 'cheerio';
+import { IMS_TOKEN } from '../src/setup-auth.js';
 
 const DA_ADMIN_HOST = process.env.DA_ADMIN_HOST || 'https://admin.da.live';
 const DA_COLLAB_HOST = process.env.DA_COLLAB_HOST || 'https://collab.da.live';
@@ -48,7 +49,13 @@ describe('Ping Suite', () => {
 
   it('Ping da-admin', async () => {
     const url = `${DA_ADMIN_HOST}/source/da-sites/da-status/tests/pingtest.html`;
-    const res = await fetch(url);
+
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer: ${IMS_TOKEN}`,
+      },
+    });
+
     const txt = await res.text();
     assert(txt.includes('<p>ping</p>'), `da-admin is down. Expected <p>ping</p> not found in ${url}: ${txt}`);
   }).timeout(5000);
@@ -66,7 +73,11 @@ describe('Ping Suite', () => {
 
   it('Ping da-content', async () => {
     const url = `${DA_CONTENT_HOST}/da-sites/da-status/tests/pingtest`;
-    const res = await fetch(url);
+    const res = await fetch(url, {
+      headers: {
+        Authorization: `Bearer: ${IMS_TOKEN}`,
+      },
+    });
     const txt = await res.text();
     assert(txt.includes('<p>ping</p>'), `da-content is down. Expected <p>ping</p> not found in ${url}: ${txt}`);
   }).timeout(5000);

@@ -12,6 +12,7 @@
 /* eslint-disable no-console */
 import * as cheerio from 'cheerio';
 import * as fs from 'fs';
+import { IMS_TOKEN } from '../../src/setup-auth.js';
 
 const DA_ADMIN_HOST = process.env.DA_ADMIN_HOST || 'https://admin.da.live';
 const HLX_ADMIN_HOST = process.env.HLX_ADMIN_HOST || 'https://admin.hlx.page';
@@ -109,8 +110,9 @@ async function pushToAdmin(doc) {
   const blob = new Blob([content], { type: 'text/html' });
   const formData = new FormData();
   formData.append('data', blob);
+  const headers = { Authorization: `Bearer: ${IMS_TOKEN}` };
 
-  const opts = { method: 'PUT', body: formData };
+  const opts = { method: 'PUT', body: formData, headers };
   const putResp = await fetch(STATUS_ADMIN_URL, opts);
   if (putResp.status !== 201 && putResp.status !== 200) {
     throw new Error(`Problem updating status page: ${putResp.status}`);
@@ -118,7 +120,8 @@ async function pushToAdmin(doc) {
 }
 
 async function updateStatus(junitRes) {
-  const resp = await fetch(STATUS_ADMIN_URL);
+  const headers = { Authorization: `Bearer: ${IMS_TOKEN}` };
+  const resp = await fetch(STATUS_ADMIN_URL, { headers });
   if (resp.status !== 200) {
     throw new Error(`Unable to obtain status page: ${resp.status}`);
   }
