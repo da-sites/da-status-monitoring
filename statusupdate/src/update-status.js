@@ -135,7 +135,8 @@ async function updateStatus(junitRes) {
 }
 
 async function previewAndPublish() {
-  const opts = { method: 'POST' };
+  const headers = { Authorization: `Bearer ${IMS_TOKEN}` };
+  const opts = { method: 'POST', headers };
   const preresp = await fetch(PREVIEW_URL, opts);
   if (preresp.status !== 200) {
     throw new Error(`Problem previewing status update: ${preresp.status}`);
