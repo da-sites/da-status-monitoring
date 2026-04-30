@@ -5,8 +5,8 @@ on:
   workflow_dispatch:
   schedule:
   # * is a special character in YAML so you have to quote this string
-  # every 10 mins
-  - cron: '0/10 * * * *'
+  # every 15 mins
+  - cron: '0/15 * * * *'
   push:
     branches:
       - main
